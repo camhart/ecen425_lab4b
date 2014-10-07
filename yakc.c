@@ -43,7 +43,8 @@ void YKRun(void){
 void YKDelayTask(unsigned count){
 	//if (count > 0)Sets the state of the TCB to delayed and then calls the scheduler. 
 }
-YKEnterISR. Prototype: void YKEnterISR(void){
+
+void YKEnterISR(void){
 	//Increment call depth
 }
 void YKExitISR(void){
