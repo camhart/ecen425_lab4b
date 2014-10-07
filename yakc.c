@@ -1,7 +1,22 @@
 #include "yakk.h"
 
+#define NUM_TCBS 10
+
+int YKCtxSwCount = 0;
+
+// TCB* readyHead, readyTail, blockedHead, blockedTail, delayedHead, delayedTail;
+
+TCB tcbArray[NUM_TCBS];
+
+int tcbCount = 0;
+
 void YKInitialize(void){
 	//Create Idle task and add it to the ready queue
+	
+
+	tcbArray[tcbCount].state = READY;
+	// tcbArray[tcbCount]
+
 
 
 }

@@ -1,3 +1,4 @@
+#include "yakc.c"
 
 typedef enum {
 	DELAYED, BLOCKED, RUNNING, READY
