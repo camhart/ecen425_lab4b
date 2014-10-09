@@ -2,3 +2,72 @@
 	CPU	8086
 	ALIGN	2
 	jmp	main	; Jump to program start
+L_myinth_1:
+	DB	"resethandler",0xA,0
+	ALIGN	2
+resetHandler:
+	; >>>>> Line:	5
+	; >>>>> void resetH 
+	jmp	L_myinth_2
+L_myinth_3:
+	; >>>>> Line:	6
+	; >>>>> printString("resethandler\n"); 
+	mov	ax, L_myinth_1
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	7
+	; >>>>> exit(0); 
+	xor	al, al
+	push	ax
+	call	exit
+	add	sp, 2
+	mov	sp, bp
+	pop	bp
+	ret
+L_myinth_2:
+	push	bp
+	mov	bp, sp
+	jmp	L_myinth_3
+L_myinth_5:
+	DB	"keyhandler",0xA,0
+	ALIGN	2
+keyHandler:
+	; >>>>> Line:	10
+	; >>>>> void keyHandler() { 
+	jmp	L_myinth_6
+L_myinth_7:
+	; >>>>> Line:	11
+	; >>>>> printString("keyhandler\n"); 
+	mov	ax, L_myinth_5
+	push	ax
+	call	printString
+	add	sp, 2
+	mov	sp, bp
+	pop	bp
+	ret
+L_myinth_6:
+	push	bp
+	mov	bp, sp
+	jmp	L_myinth_7
+L_myinth_9:
+	DB	"tickhandler",0xA,0
+	ALIGN	2
+tickHandler:
+	; >>>>> Line:	28
+	; >>>>> void tickHandler() { 
+	jmp	L_myinth_10
+L_myinth_11:
+	; >>>>> Line:	29
+	; >>>>> printString("tickhandler\n"); 
+	mov	ax, L_myinth_9
+	push	ax
+	call	printString
+	add	sp, 2
+	mov	sp, bp
+	pop	bp
+	ret
+L_myinth_10:
+	push	bp
+	mov	bp, sp
+	jmp	L_myinth_11

@@ -6,17 +6,18 @@
 #define DEFAULT_FLAGS 0x100
 #define IDLE_STACK_SIZE 256
 
-unsigned YKCtxSwCount; //Type: unsigned int This is an unsigned int that must be incremented each time a context switch occurs, defined as the dispatching of a task other than the task that ran most recently.
-unsigned YKIdleCount; // Type: unsigned int This is an unsigned int that must be incremented by the idle task in its while(1) loop. If desired, the user code can use this value to determine CPU utilization. See the section on YKIdleTask, above, to see how to prevent overflow of YKIdleCount.
-unsigned YKTickNum; //Type:
+unsigned YKCtxSwCount; 
+unsigned YKIdleCount; 
+unsigned YKTickNum; 
 
 int idleStk[IDLE_STACK_SIZE];
 
 unsigned callDepth;
 
-TCB* readyHead, *blockedHead, *delayedHead;
-
-TCB* curTCB;
+TCB* readyHead = 0; 
+TCB* blockedHead = null;
+TCB* delayedHead = null;
+TCB* curTCB = null;
 
 TCB tcbArray[NUM_TCBS];
 
@@ -25,45 +26,44 @@ unsigned int tcbCount = 0;
 void YKInitialize(void){
 	//Create Idle task and add it to the ready queue
 	printString("YKInitialize\n");
-	YKNewTask(&YKIdleTask, (void *)idleStk[IDLE_STACK_SIZE], 100);
-	curTCB = &tcbArray[0];
+	YKNewTask(&YKIdleTask, (void *)&idleStk[IDLE_STACK_SIZE], 100);
 	//new task adds to queue for us
 }
 
 void YKIdleTask(void){
 	printString("YKIdleTask\n");
-	/*while(true)
-	*	increment YKIdleCount
-	* 	do extra stuff
-	*/
 	while(1){
-		if(2 > 1)
-			if(2 > 1)
-				if(2 > 1)
-					YKIdleCount++;
+		printString("I'm in the idle task\n");
+		YKIdleCount++;
 	}
 }
 
 void addToQueue(TCB* tcb, TCB* listHead){
 	//Go down the queue and check priority of each task
 
-	TCB * pos = listHead;	
+	TCB * pos = listHead;//listHead;	
 
-	printString("addToQueue\n");
+	printString("addToQueue listHead\n");
+	printInt(listHead);
+	printString("\n");
 
-	if(listHead == NULL) {
-		listHead = tcb;
+	if(listHead == null) {
+		readyHead = tcb;
 	}
 	else {
+		if(listHead->priority < tcb->priority)
+			listHead = tcb;
 		while(tcb->priority < pos->priority){
 			pos = pos->next;
-			if(pos == NULL){
+			if(pos == null){
 				pos->next = tcb;
 				tcb->previous = pos;
-				tcb->next = NULL;
+				tcb->next = null;
 				return;
 			}
 		}
+		printInt(pos);
+		printNewLine();
 		pos->previous->next = tcb;
 		tcb->previous = pos->previous;
 		tcb->next = pos;
@@ -81,9 +81,7 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	tcbArray[tcbCount-1].taskFunction = task;
 	tcbArray[tcbCount-1].context[0] = 0;
 	tcbArray[tcbCount-1].context[1] = (unsigned short)taskStack;
-	tcbArray[tcbCount-1].context[2] = (unsigned short)task;
-	tcbArray[tcbCount-1].context[3] = 0;
-	tcbArray[tcbCount-1].context[4] = DEFAULT_FLAGS;
+	tcbArray[tcbCount-1].context[2] = 0;
 
 	addToQueue(&tcbArray[tcbCount-1], readyHead);
 	
@@ -92,7 +90,11 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 void YKRun(void){
 	printString("YKRun\n");
 	//Calls the scheduler and begins the operation of the program
-	YKScheduler();
+	curTCB = readyHead;
+	printInt(readyHead);
+	printNewLine();
+	//YKScheduler();
+	YKDispatcher();
 }
 
 void YKDelayTask(unsigned count){

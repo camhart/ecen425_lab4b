@@ -20,5 +20,5 @@ lab4b_app.s:	lab4b_app.c
 		c86 -g lab4b_app.i lab4b_app.s
 
 clean:
-		rm lab4b.bin lab4b.lst lab4Bfinal.s myinth.s myinth.i \
+		rm lab4B.bin lab4B.lst lab4Bfinal.s myinth.s myinth.i \
 		yakc.s yakc.i lab4b_app.s lab4b_app.i
