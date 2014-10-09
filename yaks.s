@@ -9,13 +9,12 @@ YKExitMutex:
 				sti
 
 YKDispatcher:
-				
-
 
 		;save context of current TCB
 			
 
 				;push general registers to stack
+
 
 				push bp
 				push ax
@@ -26,7 +25,6 @@ YKDispatcher:
 				push di
 				push ds
 				push es
-				;push cs
 				pushf
 				;ip located at [bp+2]
 
@@ -50,14 +48,13 @@ YKDispatcher:
 
 				mov 	ss, word [si]
 				add 	si, 2
+
 				mov		sp, word [si]
 				add 	si, 2
+
 				mov		cs, word [si]
-
-
 				
 				popf
-				;pop		cs
 				pop		es
 				pop		ds
 				pop		di
@@ -67,11 +64,12 @@ YKDispatcher:
 				pop		bx
 				pop		ax
 				pop 	bp
-
 				
-				pushf
-				push 	cs
 				push    word [bp+2]			;ip
+				push 	cs
+				pushf
+				
+				
 				iret
 
 
