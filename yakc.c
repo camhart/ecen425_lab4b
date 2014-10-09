@@ -14,7 +14,7 @@ int idleStk[IDLE_STACK_SIZE];
 
 unsigned callDepth;
 
-TCB* readyHead = 0; 
+TCB* readyHead = null; 
 TCB* blockedHead = null;
 TCB* delayedHead = null;
 TCB* curTCB = null;
@@ -43,12 +43,8 @@ void addToQueue(TCB* tcb, TCB* listHead){
 
 	TCB * pos = listHead;//listHead;	
 
-	printString("addToQueue listHead\n");
-	printInt(listHead);
-	printString("\n");
-
 	if(listHead == null) {
-		readyHead = tcb;
+		listHead = tcb;
 	}
 	else {
 		if(listHead->priority < tcb->priority)
@@ -69,6 +65,9 @@ void addToQueue(TCB* tcb, TCB* listHead){
 		tcb->next = pos;
 		pos->previous = tcb;	
 	}
+	printString("addToQueue listHead\n");
+	printInt(readyHead);
+	printString("\n");
 }
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	printString("YKNewTask\n");
@@ -83,7 +82,7 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	tcbArray[tcbCount-1].context[1] = (unsigned short)taskStack;
 	tcbArray[tcbCount-1].context[2] = 0;
 
-	addToQueue(&tcbArray[tcbCount-1], readyHead);
+	addToQueue(&tcbArray[tcbCount-1], &readyHead);
 	
 }
 
