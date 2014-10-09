@@ -50,7 +50,7 @@ void addToQueue(TCB* tcb, TCB* listHead){
 		if(listHead->priority < tcb->priority)
 			listHead = tcb;
 		while(tcb->priority < pos->priority){
-			pos = pos->next;
+			pos = &(pos->next);
 			if(pos == null){
 				pos->next = tcb;
 				tcb->previous = pos;
