@@ -3,8 +3,8 @@
 
 #define VAR 1
 #define NUM_TCBS 10
-#define DEFAULT_FLAGS 0x100
 #define IDLE_STACK_SIZE 256
+#define DISPATCH_STRING "YKDispatcher\n"
 
 unsigned YKCtxSwCount; 
 unsigned YKIdleCount; 
@@ -26,6 +26,7 @@ unsigned int tcbCount = 0;
 void YKInitialize(void){
 	//Create Idle task and add it to the ready queue
 	printString("YKInitialize\n");
+
 	YKNewTask(&YKIdleTask, (void *)&idleStk[IDLE_STACK_SIZE], 100);
 	//new task adds to queue for us
 }
@@ -65,10 +66,12 @@ void addToQueue(TCB* tcb, TCB* listHead){
 		tcb->next = pos;
 		pos->previous = tcb;	
 	}
+
 	printString("addToQueue listHead\n");
 	printInt(readyHead);
 	printString("\n");
 }
+
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	printString("YKNewTask\n");
 	//Creates the TCB for the task and adds it to the task queue
@@ -78,6 +81,8 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	tcbArray[tcbCount-1].priority = priority;
 	tcbArray[tcbCount-1].state = READY;
 	tcbArray[tcbCount-1].taskFunction = task;
+	printInt((int)taskStack);
+	printNewLine();
 	tcbArray[tcbCount-1].context[0] = 0;
 	tcbArray[tcbCount-1].context[1] = (unsigned short)taskStack;
 	tcbArray[tcbCount-1].context[2] = 0;
@@ -89,10 +94,12 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 void YKRun(void){
 	printString("YKRun\n");
 	//Calls the scheduler and begins the operation of the program
+
 	curTCB = readyHead;
-	printInt(readyHead);
-	printNewLine();
+	// printInt(readyHead);
+	// printNewLine();
 	//YKScheduler();
+
 	YKDispatcher();
 }
 
@@ -132,7 +139,9 @@ void YKScheduler(void){
 	if(curTCB != readyHead) {
 		// curTCB = readyHead;
 		YKDispatcher();
-	}	
+	} else {
+		printString("curTCB == readyHead");
+	}
 
 }
 
