@@ -1,7 +1,12 @@
 #include "yakk.h"
 
+#define VAR 1
 #define NUM_TCBS 10
 #define DEFAULT_FLAGS 0x100
+
+unsigned YKCtxSwCount; //Type: unsigned int This is an unsigned int that must be incremented each time a context switch occurs, defined as the dispatching of a task other than the task that ran most recently.
+unsigned YKIdleCount; // Type: unsigned int This is an unsigned int that must be incremented by the idle task in its while(1) loop. If desired, the user code can use this value to determine CPU utilization. See the section on YKIdleTask, above, to see how to prevent overflow of YKIdleCount.
+unsigned YKTickNum; //Type: 
 
 TCB* readyHead, blockedHead, delayedHead;
 
