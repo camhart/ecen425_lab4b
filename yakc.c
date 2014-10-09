@@ -35,7 +35,8 @@ void YKIdleTask(void){
 			YKIdleCount++;
 	}
 }
-addToQueue(TCB * tcb, TCB* listHead){
+
+void addToQueue(TCB * tcb, TCB* listHead){
 	//Go down the queue and check priority of each task
 	TCB * pos = listHead;	
 	if(listHead == NULL)
@@ -55,7 +56,6 @@ addToQueue(TCB * tcb, TCB* listHead){
 		tcb->next = pos;
 		pos->previous = tcb;	
 	}
-	
 }
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	//Creates the TCB for the task and adds it to the task queue
@@ -72,8 +72,8 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	tcbArray[tcbCount-1].state = READY;
 	tcbArray[tcbCount-1].taskFunction = task;
 	tcbArray[tcbCount-1].context[0] = 0;
-	tcbArray[tcbCount-1].context[1] = taskStack;
-	tcbArray[tcbCount-1].context[2] = task;
+	tcbArray[tcbCount-1].context[1] = (unsigned short)taskStack;
+	tcbArray[tcbCount-1].context[2] = (unsigned short)task;
 	tcbArray[tcbCount-1].context[3] = 0;
 	tcbArray[tcbCount-1].context[4] = DEFAULT_FLAGS;
 
