@@ -20,18 +20,6 @@ void YKInitialize(void){
 
 }
 
-void YKEnterMutex(void){
-	//Disable Interrupts
-	__asm__(
-		"cli\n"
-	);
-}
-void YKExitMutex(void){
-	//Enable Interrrupts
-	__asm__(
-		"sti\n"
-	);
-}
 void YKIdleTask(void){
 	/*while(true)
 	*	increment YKIdleCount
