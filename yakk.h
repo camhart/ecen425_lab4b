@@ -1,4 +1,4 @@
-#define NULL 0
+#define null 0
 
 
 typedef enum {
