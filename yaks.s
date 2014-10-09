@@ -4,15 +4,14 @@
 
 YKEnterMutex:
 				cli
+				ret
 
 YKExitMutex:
-				sti
+				sti		
+				ret		
 
-YKDispatcher:
-
-		;save context of current TCB
-				
-
+saveAndRestoreContext:
+			;save context of current TCB
 				;push general registers to stack
 
 				push bp
@@ -38,7 +37,7 @@ YKDispatcher:
 				add 		si, 2
 				mov 		word [si], cs
 
-
+restoreContext:
 		;restore context
 
 				mov 		si, word[readyHead]			;load si with readyHead

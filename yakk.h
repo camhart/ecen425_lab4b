@@ -28,7 +28,8 @@ typedef struct TCB {
 } TCB;
 
 
-
+void saveAndRestoreContext(void);
+void restoreContext(void);
 void YKInitialize(void);
 void YKEnterMutex(void);
 void YKExitMutex(void);
@@ -39,7 +40,7 @@ void YKDelayTask(unsigned count);
 void YKEnterISR(void);
 void YKExitISR(void);
 void YKScheduler(void);
-void YKDispatcher(void);
+void YKDispatcher(int);
 YKSEM* YKSemCreate(int initialValue);
 void YKSemPend(YKSEM *semaphore);
 void YKSemPost(YKSEM *semaphore);

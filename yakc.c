@@ -4,7 +4,6 @@
 #define VAR 1
 #define NUM_TCBS 10
 #define IDLE_STACK_SIZE 256
-#define DISPATCH_STRING "YKDispatcher\n"
 
 unsigned YKCtxSwCount; 
 unsigned YKIdleCount; 
@@ -24,9 +23,9 @@ TCB tcbArray[NUM_TCBS];
 unsigned int tcbCount = 0;
 
 void YKInitialize(void){
+	YKEnterMutex();
 	//Create Idle task and add it to the ready queue
 	printString("YKInitialize\n");
-
 	YKNewTask(&YKIdleTask, (void *)&idleStk[IDLE_STACK_SIZE], 100);
 	//new task adds to queue for us
 }
@@ -91,16 +90,22 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	
 }
 
+void YKDispatcher(int first){
+	if(first){
+		restoreContext();
+	}
+	else {
+		saveAndRestoreContext();
+	}
+}
+
 void YKRun(void){
 	printString("YKRun\n");
 	//Calls the scheduler and begins the operation of the program
 
-	curTCB = readyHead;
 	// printInt(readyHead);
 	// printNewLine();
-	//YKScheduler();
-
-	YKDispatcher();
+	YKScheduler();
 }
 
 void YKDelayTask(unsigned count){
@@ -127,7 +132,7 @@ void YKExitISR(void){
 	callDepth--;
 	// if(call depth is 0)
 	//	call scheduler
-	if(callDepth == 0) {
+	if(callDepth == 0 && curTCB != null) {
 		YKScheduler();
 	}
 }
@@ -136,13 +141,11 @@ void YKScheduler(void){
 	printString("YKScheduler\n");
 	//Peek the top ready task, if different from current task
 	//call dispatcher
-	if(curTCB != readyHead) {
-		// curTCB = readyHead;
-		YKDispatcher();
-	} else {
-		printString("curTCB == readyHead");
+	if(curTCB == null)
+		YKDispatcher(1);
+	else if(curTCB != readyHead) {
+		YKDispatcher(0);
 	}
-
 }
 
 YKSEM* YKSemCreate(int initialValue){

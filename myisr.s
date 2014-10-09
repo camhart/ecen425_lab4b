@@ -4,7 +4,7 @@
 
 
 resetISR:
-
+	
         push    ax         
         push    bx
         push    cx
@@ -14,15 +14,19 @@ resetISR:
         push    bp
         push    es
         push    ds
+	
+	call YKEnterISR
         
-        sti                 
-
+        sti   
+              
         call resetHandler
 
         cli                 
         
         mov     al, 0x20    
         out     0x20, al
+
+	call	YKExitISR
         
         pop     ds          
         pop     es
@@ -46,15 +50,19 @@ tickISR:
         push    bp
         push    es
         push    ds
-        
+
+	call 	YKEnterISR        
+
         sti                 
         
-        call tickHandler   
+        call 	tickHandler   
         
         cli                 
         
         mov     al, 0x20    
         out     0x20, al
+
+	call 	YKExitISR
         
         pop     ds          
         pop     es
@@ -79,14 +87,18 @@ keyboardISR:
         push    es
         push    ds
         
-        sti                
+	call 	YKEnterISR        
+
+	sti                
         
-        call keyHandler  
+        call 	keyHandler  
         
         cli                
         
         mov     al, 0x20   
         out     0x20, al
+
+	call 	YKExitISR
         
         pop     ds         
         pop     es
