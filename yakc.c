@@ -47,8 +47,12 @@ void addToQueue(TCB* tcb, TCB* listHead){
 		listHead = tcb;
 	}
 	else {
-		if(listHead->priority < tcb->priority)
+		if(listHead->priority < tcb->priority){
 			listHead = tcb;
+			tcb->previous = pos->previous;
+			tcb->next = pos;
+			pos->previous = tcb;
+		}
 		while(tcb->priority < pos->priority){
 			pos = &(pos->next);
 			if(pos == null){
@@ -58,17 +62,11 @@ void addToQueue(TCB* tcb, TCB* listHead){
 				return;
 			}
 		}
-		printInt(pos);
-		printNewLine();
 		pos->previous->next = tcb;
 		tcb->previous = pos->previous;
 		tcb->next = pos;
 		pos->previous = tcb;	
 	}
-
-	printString("addToQueue listHead\n");
-	printInt(readyHead);
-	printString("\n");
 }
 
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
@@ -77,6 +75,8 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	//Also initializes all values in the TCB
 	tcbCount++;	
 
+	tcbArray[tcbCount-1].next = null;
+	tcbArray[tcbCount-1].previous = null;
 	tcbArray[tcbCount-1].priority = priority;
 	tcbArray[tcbCount-1].state = READY;
 	tcbArray[tcbCount-1].taskFunction = task;
@@ -86,8 +86,7 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	tcbArray[tcbCount-1].context[1] = (unsigned short)taskStack;
 	tcbArray[tcbCount-1].context[2] = 0;
 
-	addToQueue(&tcbArray[tcbCount-1], &readyHead);
-	
+	addToQueue(&tcbArray[tcbCount-1], &readyHead);	
 }
 
 void YKDispatcher(int first){
