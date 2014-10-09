@@ -1,14 +1,13 @@
 #include "yakk.h"
 
 #define NUM_TCBS 10
+#define DEFAULT_FLAGS 0x100
 
-int YKCtxSwCount = 0;
-
-// TCB* readyHead, readyTail, blockedHead, blockedTail, delayedHead, delayedTail;
+TCB* readyHead, blockedHead, delayedHead;
 
 TCB tcbArray[NUM_TCBS];
 
-int tcbCount = 0;
+unsigned int tcbCount = 0;
 
 void YKInitialize(void){
 	//Create Idle task and add it to the ready queue
@@ -23,19 +22,70 @@ void YKInitialize(void){
 
 void YKEnterMutex(void){
 	//Disable Interrupts
+	__asm__(
+		"cli\n"
+	);
 }
 void YKExitMutex(void){
 	//Enable Interrrupts
+	__asm__(
+		"sti\n"
+	);
 }
 void YKIdleTask(void){
 	/*while(true)
 	*	increment YKIdleCount
 	* 	do extra stuff
 	*/
+	while(1){
+		if(2 > 1)
+			YKIdleCount++;
+	}
+}
+addToQueue(TCB * tcb, TCB* listHead){
+	//Go down the queue and check priority of each task
+	TCB * pos = listHead;	
+	if(listHead == NULL)
+		listHead = tcb;
+	else{
+		while(tcb->priority < pos->priority){
+			pos = pos->next;
+			if(pos == NULL){
+				pos->next = tcb;
+				tcb->previous = pos;
+				tcb->next = NULL;
+				return;
+			}
+		}
+		pos->previous->next = tcb;
+		tcb->previous = pos->previous;
+		tcb->next = pos;
+		pos->previous = tcb;	
+	}
+	
 }
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	//Creates the TCB for the task and adds it to the task queue
 	//Also initializes all values in the TCB
+	/*unsigned short int context[5];//SS, SP, IP, CS and Flags register will be saved here.
+	State state;// an enumerated type. blocked, delayed, ready
+	struct TCB * previous; //used when inserting and removing from queue (our queue will be a double linked list)
+	struct TCB * next; // same as above
+	unsigned char priority; //priority value of the current task
+	void (* taskFunction)(void);*/
+	tcbCount++;	
+
+	tcbArray[tcbCount-1].priority = priority;
+	tcbArray[tcbCount-1].state = READY;
+	tcbArray[tcbCount-1].taskFunction = task;
+	tcbArray[tcbCount-1].context[0] = 0;
+	tcbArray[tcbCount-1].context[1] = taskStack;
+	tcbArray[tcbCount-1].context[2] = task;
+	tcbArray[tcbCount-1].context[3] = 0;
+	tcbArray[tcbCount-1].context[4] = DEFAULT_FLAGS;
+
+	addToQueue(&tcbArray[tcbCount-1], readyHead);
+	
 }
 void YKRun(void){
 	//Calls the scheduler and begins the operation of the program
