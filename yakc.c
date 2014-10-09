@@ -26,11 +26,7 @@ unsigned int tcbCount = 0;
 void YKInitialize(void){
 	//Create Idle task and add it to the ready queue
 	printString("YKInitialize\n");
-<<<<<<< HEAD
-	printInt((int)idleStk);
-	printNewLine();
-=======
->>>>>>> e62c49b9747f751c862b3fb44ccfbaf2cde63a86
+
 	YKNewTask(&YKIdleTask, (void *)&idleStk[IDLE_STACK_SIZE], 100);
 	//new task adds to queue for us
 }
