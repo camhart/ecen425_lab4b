@@ -18,7 +18,7 @@ typedef struct {
 } YKEVENT;
 
 typedef struct TCB {
-	unsigned short int context[3];//SS, SP register will be saved here.
+	unsigned short int context[3];//SS, SP, CS register will be saved here.
 	State state;// an enumerated type. blocked, delayed, ready
 	struct TCB * previous; //used when inserting and removing from queue (our queue will be a double linked list)
 	struct TCB * next; // same as above

@@ -37,7 +37,6 @@ saveAndRestoreContext:
 				add 		si, 2
 				mov 		word [si], cs
 
-restoreContext:
 		;restore context
 
 				mov 		si, word[readyHead]			;load si with readyHead
@@ -68,6 +67,29 @@ restoreContext:
 				pushf
 				push 		cs
 				push    	word [bp+2]				;ip
+
+				iret
+
+restoreContext:
+
+				mov 	si, word[readyHead]			;load si with readyHead
+				
+				mov		word [curTCB], si			;assign new task to curTCB
+
+				mov 	ss, word [si]
+				add 	si, 2
+
+				mov		sp, word [si]
+				add 	si, 2
+
+				mov		cs, word [si]
+				add 	si, 12
+
+
+				pushf
+				push 		cs
+
+				push    	word [si]				;ip
 
 				iret
 

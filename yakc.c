@@ -42,23 +42,19 @@ TCB * addToQueue(TCB* tcb, TCB* listHead){
 	//Go down the queue and check priority of each task
 	int looped = 0;
 	TCB * pos = listHead;//listHead;	
-	printInt(listHead->priority);
-	printNewLine();
+
 	if(listHead == null) {
 		listHead = tcb;
-		printString("THIS SETS THE LISTHEAD\n");
-		printInt(tcb);
-		printNewLine();
-		printInt(listHead);
-		printNewLine();
 	}
 	else {
-		if(listHead->priority < tcb->priority){
+		if(listHead->priority > tcb->priority){
 			listHead = tcb;
 			(tcb->previous) = pos->previous;
 			(tcb->next) = pos;
 			(pos->previous) = tcb;
+			return listHead;
 		}
+
 		while(tcb->priority < pos->priority){
 			if(pos->next != null)			
 				pos = pos->next;
@@ -80,8 +76,7 @@ void printTasks(){
 	TCB * pos = readyHead;
 	printString("Here are all the tasks: \n");
 	while(pos != null){
-		printInt(pos->priority);
-		printNewLine();
+
 		pos = pos->next;
 	}
 }
@@ -117,9 +112,7 @@ void YKRun(void){
 	printString("YKRun\n");
 	//Calls the scheduler and begins the operation of the program
 
-	// printInt(readyHead);
-	// printNewLine();
-	printTasks();
+	//printTasks();
 	YKScheduler();
 }
 
