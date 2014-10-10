@@ -94,6 +94,56 @@ restoreContext:
 				iret
 
 
+saveAndFirstRestoreContext: 
+			;save context of current TCB
+				;push general registers to stack
+
+				push bp
+				push ax
+				push bx
+				push cx
+				push dx
+				push si
+				push di
+				push ds
+				push es
+				pushf
+	
+
+				;save stack pointer and stack segment to TCB block
+
+				mov		si, word [curTCB]			;load si with address of curTCB
+				mov		word [si], ss 		
+
+				add 		si, 2
+				mov		word [si], sp
+
+				add 		si, 2
+				mov 		word [si], cs
+
+		;restore context
+
+				mov 	si, word[readyHead]			;load si with readyHead
+				
+				mov		word [curTCB], si			;assign new task to curTCB
+
+				mov 	ss, word [si]
+				add 	si, 2
+
+				mov		sp, word [si]
+				add 	si, 2
+
+				mov		cs, word [si]
+				add 	si, 12
+
+
+				pushf
+				push 		cs
+
+				push    	word [si]				;ip
+
+				iret
+
 
 
 

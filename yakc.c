@@ -11,6 +11,8 @@ unsigned YKTickNum;
 
 int idleStk[IDLE_STACK_SIZE];
 
+int firstRun = 1;
+
 unsigned callDepth;
 
 TCB* readyHead = null; 
@@ -25,15 +27,18 @@ unsigned int tcbCount = 0;
 void YKInitialize(void){
 	YKEnterMutex();
 	//Create Idle task and add it to the ready queue
-	printString("YKInitialize\n");
+	//printString("YKInitialize\n");
 	YKNewTask(&YKIdleTask, (void *)&idleStk[IDLE_STACK_SIZE], 100);
 	//new task adds to queue for us
 }
 
 void YKIdleTask(void){
-	printString("YKIdleTask\n");
+	int a = 0;
+	// printString("YKIdleTask\n");
 	while(1){
-		printString("I'm in the idle task\n");
+		// printString("I'm in the idle task\n");
+		a++;
+		a = a * a;
 		YKIdleCount++;
 	}
 }
@@ -74,15 +79,18 @@ TCB * addToQueue(TCB* tcb, TCB* listHead){
 
 void printTasks(){
 	TCB * pos = readyHead;
-	printString("Here are all the tasks: \n");
+	//printString("Here are all the tasks: \n");
 	while(pos != null){
+		printInt(pos->priority);
+		//printString("\n");
 
+		// printString("\n");
 		pos = pos->next;
 	}
 }
 
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
-	printString("YKNewTask\n");
+	//printString("YKNewTask\n");
 	//Creates the TCB for the task and adds it to the task queue
 	//Also initializes all values in the TCB
 	tcbCount++;	
@@ -95,13 +103,20 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	tcbArray[tcbCount-1].context[0] = 0;
 	tcbArray[tcbCount-1].context[1] = (unsigned short)taskStack;
 	tcbArray[tcbCount-1].context[2] = 0;
+	tcbArray[tcbCount-1].runCount = 0;
 
-	readyHead = addToQueue(&tcbArray[tcbCount-1], readyHead);	
+	readyHead = addToQueue(&tcbArray[tcbCount-1], readyHead);
+	// printTasks();	
+	if(!firstRun) {
+		YKScheduler();
+	}
 }
 
 void YKDispatcher(int first){
-	if(first){
+	if(first == 1){
 		restoreContext();
+	} else if (first == 2) {
+		saveAndFirstRestoreContext();
 	}
 	else {
 		saveAndRestoreContext();
@@ -109,15 +124,16 @@ void YKDispatcher(int first){
 }
 
 void YKRun(void){
-	printString("YKRun\n");
+	//printString("YKRun\n");
 	//Calls the scheduler and begins the operation of the program
 
 	//printTasks();
+	firstRun = 0;
 	YKScheduler();
 }
 
 void YKDelayTask(unsigned count){
-	printString("YKDelayTask\n");
+	//printString("YKDelayTask\n");
 	//if (count > 0)Sets the state of the TCB to delayed and then calls the scheduler. 
 	if(count > 0) {
 		curTCB->delay = count;
@@ -128,14 +144,14 @@ void YKDelayTask(unsigned count){
 }
 
 void YKEnterISR(void){
-	printString("YKEnterISR\n");
+	//printString("YKEnterISR\n");
 	//Increment call depth
 	callDepth++;
 }
 
 
 void YKExitISR(void){
-	printString("YKExitISR\n");
+	//printString("YKExitISR\n");
 	//Decrement call depth
 	callDepth--;
 	// if(call depth is 0)
@@ -146,13 +162,23 @@ void YKExitISR(void){
 }
 
 void YKScheduler(void){
-	printString("YKScheduler\n");
+	//printString("YKScheduler\n");
 	//Peek the top ready task, if different from current task
 	//call dispatcher
-	if(curTCB == null)
-		YKDispatcher(1);
+
+	if(curTCB == null) {
+		YKCtxSwCount++;
+		YKDispatcher(1); //first run
+	}
 	else if(curTCB != readyHead) {
-		YKDispatcher(0);
+		YKCtxSwCount++;
+		if(curTCB->runCount == 0) {
+			curTCB->runCount = curTCB->runCount + 1;
+			YKDispatcher(2);
+		} else {
+			curTCB->runCount = curTCB->runCount + 1;
+			YKDispatcher(0);
+		}
 	}
 }
 

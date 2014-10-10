@@ -25,10 +25,12 @@ typedef struct TCB {
 	unsigned delay; //How much time to delay
 	unsigned char priority; //priority value of the current task
 	void (* taskFunction)(void);
+	unsigned char runCount;
 } TCB;
 
 
 void saveAndRestoreContext(void);
+void saveAndFirstRestoreContext(void);
 void restoreContext(void);
 void YKInitialize(void);
 void YKEnterMutex(void);
