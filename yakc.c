@@ -42,7 +42,8 @@ TCB * addToQueue(TCB* tcb, TCB* listHead){
 	//Go down the queue and check priority of each task
 	int looped = 0;
 	TCB * pos = listHead;//listHead;	
-	
+	printInt(listHead->priority);
+	printNewLine();
 	if(listHead == null) {
 		listHead = tcb;
 		printString("THIS SETS THE LISTHEAD\n");
@@ -54,36 +55,35 @@ TCB * addToQueue(TCB* tcb, TCB* listHead){
 	else {
 		if(listHead->priority < tcb->priority){
 			listHead = tcb;
-			tcb->previous = pos->previous;
-			tcb->next = pos;
-			pos->previous = tcb;
+			(tcb->previous) = pos->previous;
+			(tcb->next) = pos;
+			(pos->previous) = tcb;
 		}
 		while(tcb->priority < pos->priority){
-			if(!looped){
-			printString("Priority of LISTHEAD: ");
-			printInt(listHead->priority);
-			printString("\nPriority of TCB: ");
-			printInt(tcb->priority);
-			printString("\nPriority of POS: ");
-			printInt(pos->priority);
-			printNewLine();
-			looped = 1;
-			}
-
-			pos = pos->next;
-			if(pos == null){
-				pos->next = tcb;
+			if(pos->next != null)			
+				pos = pos->next;
+			else{
 				tcb->previous = pos;
-				tcb->next = null;
+				pos->next = tcb;
 				return listHead;
 			}
 		}
-		pos->previous->next = tcb;
-		tcb->previous = pos->previous;
-		tcb->next = pos;
-		pos->previous = tcb;	
+		(pos->previous->next) = tcb;
+		(tcb->previous) = pos->previous;
+		(tcb->next) = pos;
+		(pos->previous) = tcb;	
 	}
 	return listHead;
+}
+
+void printTasks(){
+	TCB * pos = readyHead;
+	printString("Here are all the tasks: \n");
+	while(pos != null){
+		printInt(pos->priority);
+		printNewLine();
+		pos = pos->next;
+	}
 }
 
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
@@ -119,6 +119,7 @@ void YKRun(void){
 
 	// printInt(readyHead);
 	// printNewLine();
+	printTasks();
 	YKScheduler();
 }
 
