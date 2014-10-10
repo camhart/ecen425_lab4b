@@ -38,13 +38,18 @@ void YKIdleTask(void){
 	}
 }
 
-void addToQueue(TCB* tcb, TCB* listHead){
+TCB * addToQueue(TCB* tcb, TCB* listHead){
 	//Go down the queue and check priority of each task
-
+	int looped = 0;
 	TCB * pos = listHead;//listHead;	
-
+	
 	if(listHead == null) {
 		listHead = tcb;
+		printString("THIS SETS THE LISTHEAD\n");
+		printInt(tcb);
+		printNewLine();
+		printInt(listHead);
+		printNewLine();
 	}
 	else {
 		if(listHead->priority < tcb->priority){
@@ -54,12 +59,23 @@ void addToQueue(TCB* tcb, TCB* listHead){
 			pos->previous = tcb;
 		}
 		while(tcb->priority < pos->priority){
-			pos = &(pos->next);
+			if(!looped){
+			printString("Priority of LISTHEAD: ");
+			printInt(listHead->priority);
+			printString("\nPriority of TCB: ");
+			printInt(tcb->priority);
+			printString("\nPriority of POS: ");
+			printInt(pos->priority);
+			printNewLine();
+			looped = 1;
+			}
+
+			pos = pos->next;
 			if(pos == null){
 				pos->next = tcb;
 				tcb->previous = pos;
 				tcb->next = null;
-				return;
+				return listHead;
 			}
 		}
 		pos->previous->next = tcb;
@@ -67,6 +83,7 @@ void addToQueue(TCB* tcb, TCB* listHead){
 		tcb->next = pos;
 		pos->previous = tcb;	
 	}
+	return listHead;
 }
 
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
@@ -80,13 +97,11 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	tcbArray[tcbCount-1].priority = priority;
 	tcbArray[tcbCount-1].state = READY;
 	tcbArray[tcbCount-1].taskFunction = task;
-	printInt((int)taskStack);
-	printNewLine();
 	tcbArray[tcbCount-1].context[0] = 0;
 	tcbArray[tcbCount-1].context[1] = (unsigned short)taskStack;
 	tcbArray[tcbCount-1].context[2] = 0;
 
-	addToQueue(&tcbArray[tcbCount-1], &readyHead);	
+	readyHead = addToQueue(&tcbArray[tcbCount-1], readyHead);	
 }
 
 void YKDispatcher(int first){
@@ -113,7 +128,7 @@ void YKDelayTask(unsigned count){
 	if(count > 0) {
 		curTCB->delay = count;
 		curTCB->state = DELAYED;
-		addToQueue(curTCB, delayedHead);
+		delayedHead = addToQueue(curTCB, delayedHead);
 		YKScheduler();
 	}
 }
