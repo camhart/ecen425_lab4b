@@ -48,11 +48,11 @@ TCB* removeFromQueue(TCB* tcb, TCB* head){
 		tcb->previous->next = tcb->next;
 	if(tcb->next != null)
 		tcb->next->previous = tcb->previous;
-	if(tcb == head && head != null)
+	if(tcb == head)
 		head = tcb->next;
 	tcb->next = null;
 	tcb->previous = null;
-	return tcb;
+	return head;
 }
 
 TCB * addToQueue(TCB* tcb, TCB* listHead){
@@ -286,19 +286,20 @@ void YKEventReset(YKEVENT *event, unsigned eventMask){
 
 void YKTickHandler() {
 	TCB* cur = delayedHead;
+	TCB* nextDelayed = null;
 	printQueue(delayedHead, " Delayed (before YKTickHandler)");
 	while(cur != null) {
-
+		nextDelayed = cur->next;
 		cur->delay--;
 		if(cur->delay <= 0) {
 			cur->state = READY;
 
-			cur = removeFromQueue(cur, delayedHead);
+			delayedHead = removeFromQueue(cur, delayedHead);
 
 			readyHead = addToQueue(cur, readyHead);
 
 		}
-		cur = cur->next;
+		cur = nextDelayed;
 	}
 	printQueue(delayedHead, " Delayed (after YKTickHandler)");
 }
