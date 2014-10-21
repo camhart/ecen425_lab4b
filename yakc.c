@@ -43,11 +43,13 @@ void YKIdleTask(void){
 	}
 }
 
- TCB* removeFromQueue(TCB* tcb){
+TCB* removeFromQueue(TCB* tcb, TCB* head){
 	if(tcb->previous != null)
 		tcb->previous->next = tcb->next;
 	if(tcb->next != null)
 		tcb->next->previous = tcb->previous;
+	if(tcb == head && head != null)
+		head = tcb->next;
 	tcb->next = null;
 	tcb->previous = null;
 	return tcb;
@@ -91,9 +93,6 @@ void printTasks(){
 	//printString("Here are all the tasks: \n");
 	while(pos != null){
 		printInt(pos->priority);
-		//printString("\n");
-
-		// printString("\n");
 		pos = pos->next;
 	}
 }
@@ -285,17 +284,6 @@ void YKEventReset(YKEVENT *event, unsigned eventMask){
 	//reset bits to 0
 }
 
-// typedef struct TCB {
-// 	unsigned short int context[3];//SS, SP, CS register will be saved here.
-// 	State state;// an enumerated type. blocked, delayed, ready
-// 	struct TCB * previous; //used when inserting and removing from queue (our queue will be a double linked list)
-// 	struct TCB * next; // same as above
-// 	unsigned delay; //How much time to delay
-// 	unsigned char priority; //priority value of the current task
-// 	void (* taskFunction)(void);
-// 	unsigned char runCount;
-// } TCB;
-
 void YKTickHandler() {
 	TCB* cur = delayedHead;
 	printQueue(delayedHead, " Delayed (before YKTickHandler)");
@@ -305,7 +293,7 @@ void YKTickHandler() {
 		if(cur->delay <= 0) {
 			cur->state = READY;
 
-			cur = removeFromQueue(cur);
+			cur = removeFromQueue(cur, delayedHead);
 
 			readyHead = addToQueue(cur, readyHead);
 
