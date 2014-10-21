@@ -34,9 +34,10 @@ void YKInitialize(void){
 
 void YKIdleTask(void){
 	int a = 52;
+	YKExitMutex();
 	// printString("YKIdleTask\n");
 	while(1){
-		// printString(".");
+		//printString(".");
 		a++;
 		a = a * a;
 		YKIdleCount++;
@@ -101,6 +102,7 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	//printString("YKNewTask\n");
 	//Creates the TCB for the task and adds it to the task queue
 	//Also initializes all values in the TCB
+	YKEnterMutex();
 	tcbCount++;	
 
 	tcbArray[tcbCount-1].next = null;
@@ -112,8 +114,10 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority){
 	tcbArray[tcbCount-1].context[1] = (unsigned short)taskStack;
 	tcbArray[tcbCount-1].context[2] = 0;
 	tcbArray[tcbCount-1].runCount = 0;
-
+	
+	
 	readyHead = addToQueue(&tcbArray[tcbCount-1], readyHead);
+	YKExitMutex();
 	// printTasks();	
 	if(!firstRun) {
 		YKScheduler();
@@ -163,8 +167,12 @@ void YKDelayTask(unsigned count){
 	if(count > 0) {
 		curTCB->delay = count;
 		curTCB->state = DELAYED;
+		
+		YKEnterMutex();
 		readyHead = removeFromQueue(curTCB, readyHead);
 		delayedHead = addToQueue(curTCB, delayedHead);
+		YKExitMutex();
+
 		YKScheduler();
 	}
 }
@@ -189,7 +197,7 @@ void YKExitISR(void){
 
 void YKScheduler(void){
 
-	// YKEnterMutex();
+	YKEnterMutex();
 
 	if(curTCB == null) {
 		YKCtxSwCount++;
@@ -209,9 +217,7 @@ void YKScheduler(void){
 		}
 	}
 
-	// else {
-	// 	YKExitMutex();
-	// }
+	YKExitMutex();
 }
 
 YKSEM* YKSemCreate(int initialValue){

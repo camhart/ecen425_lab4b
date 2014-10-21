@@ -153,6 +153,9 @@ L_myinth_19:
 	add	si, 6
 	mov	word [si], 3
 	; >>>>> Line:	41
+	; >>>>> YKEnterMutex(); 
+	call	YKEnterMutex
+	; >>>>> Line:	42
 	; >>>>> delayedHead = removeFromQueue(cur, delayedHead); 
 	push	word [delayedHead]
 	push	word [bp-2]
@@ -166,6 +169,9 @@ L_myinth_19:
 	call	addToQueue
 	add	sp, 4
 	mov	word [readyHead], ax
+	; >>>>> Line:	44
+	; >>>>> YKExitMutex(); 
+	call	YKExitMutex
 L_myinth_22:
 	; >>>>> Line:	46
 	; >>>>> cur = nextDelayed; 

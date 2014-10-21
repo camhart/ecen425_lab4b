@@ -38,10 +38,10 @@ void YKTickHandler() {
         if(cur->delay <= 0) {
             cur->state = READY;
 
+	    YKEnterMutex();
             delayedHead = removeFromQueue(cur, delayedHead);
-
             readyHead = addToQueue(cur, readyHead);
-
+	    YKExitMutex();
         }
         cur = nextDelayed;
     }
