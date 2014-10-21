@@ -137,6 +137,7 @@ void YKRun(void){
 
 	//printTasks();
 	firstRun = 0;
+	YKExitMutex();
 	YKScheduler();
 }
 
