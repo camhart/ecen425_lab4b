@@ -156,7 +156,6 @@ void printQueue(TCB* head, char* st) {
 	printString("\n");
 
 	while(cur != null) {
-		printString(".");
 		printTCB(cur);
 		cur = cur->next;
 	}
@@ -196,7 +195,7 @@ void YKExitISR(void){
 
 void YKScheduler(void){
 
-	// YKEnterMutex();
+	YKEnterMutex();
 
 	if(curTCB == null) {
 		YKCtxSwCount++;
@@ -216,9 +215,9 @@ void YKScheduler(void){
 		}
 	}
 
-	// else {
-	// 	YKExitMutex();
-	// }
+	else {
+		YKExitMutex();
+	}
 }
 
 YKSEM* YKSemCreate(int initialValue){
