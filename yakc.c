@@ -172,7 +172,7 @@ void YKDelayTask(unsigned count){
 	if(count > 0) {
 		curTCB->delay = count;
 		curTCB->state = DELAYED;
-		curTCB = removeFromQueue(curTCB);
+		readyHead = removeFromQueue(curTCB, readyHead);
 		delayedHead = addToQueue(curTCB, delayedHead);
 		YKScheduler();
 	}
