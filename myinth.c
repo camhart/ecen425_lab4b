@@ -32,7 +32,6 @@ void YKTickHandler() {
     printInt(YKTickNum);
     printNewLine();
 
-    printQueue(delayedHead, " Delayed (before YKTickHandler)");
     while(cur != null) {
         nextDelayed = cur->next;
         cur->delay--;
@@ -46,5 +45,4 @@ void YKTickHandler() {
         }
         cur = nextDelayed;
     }
-    printQueue(delayedHead, " Delayed (after YKTickHandler)");
 }

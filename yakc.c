@@ -132,45 +132,39 @@ void YKDispatcher(int first){
 }
 
 void YKRun(void){
-	//printString("YKRun\n");
-	//Calls the scheduler and begins the operation of the program
-
-	//printTasks();
 	firstRun = 0;
 	YKExitMutex();
 	YKScheduler();
 }
 
-void printTCB(TCB* tcb) {
-	printString("\t{ priority = ");
-	printInt(tcb->priority);
-	printString(", delay = ");
-	printInt(tcb->delay);
-	printString("}\n");	
-}
+// void printTCB(TCB* tcb) {
+// 	printString("\t{ priority = ");
+// 	printInt(tcb->priority);
+// 	printString(", delay = ");
+// 	printInt(tcb->delay);
+// 	printString("}\n");	
+// }
 
-void printQueue(TCB* head, char* st) {
-	TCB* cur = head;
-	printString("Printing Queue: ");
-	printString(st);
-	printString("\n");
+// void printQueue(TCB* head, char* st) {
+// 	TCB* cur = head;
+// 	printString("Printing Queue: ");
+// 	printString(st);
+// 	printString("\n");
 
-	while(cur != null) {
-		printTCB(cur);
-		cur = cur->next;
-	}
-}
+// 	while(cur != null) {
+// 		printTCB(cur);
+// 		cur = cur->next;
+// 	}
+// }
 
 void YKDelayTask(unsigned count){
 	//printString("YKDelayTask\n");
 	//if (count > 0)Sets the state of the TCB to delayed and then calls the scheduler. 
-	printQueue(delayedHead, "Delayed");
 	if(count > 0) {
 		curTCB->delay = count;
 		curTCB->state = DELAYED;
 		readyHead = removeFromQueue(curTCB, readyHead);
 		delayedHead = addToQueue(curTCB, delayedHead);
-		printQueue(delayedHead, "Delayed");
 		YKScheduler();
 	}
 }
@@ -195,7 +189,7 @@ void YKExitISR(void){
 
 void YKScheduler(void){
 
-	YKEnterMutex();
+	// YKEnterMutex();
 
 	if(curTCB == null) {
 		YKCtxSwCount++;
@@ -215,9 +209,9 @@ void YKScheduler(void){
 		}
 	}
 
-	else {
-		YKExitMutex();
-	}
+	// else {
+	// 	YKExitMutex();
+	// }
 }
 
 YKSEM* YKSemCreate(int initialValue){
