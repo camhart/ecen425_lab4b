@@ -43,9 +43,18 @@ void YKIdleTask(void){
 	}
 }
 
+void removeFromQueue(TCB* tcb){
+	if(tcb->previous != null)
+		tcb->previous->next = tcb->next;
+	if(tcb->next != null)
+		tcb->next->previous = tcb->previous;
+	tcb->next = null;
+	tcb->previous = null;
+	return tcb;
+}
+
 TCB * addToQueue(TCB* tcb, TCB* listHead){
 	//Go down the queue and check priority of each task
-	int looped = 0;
 	TCB * pos = listHead;//listHead;	
 
 	if(listHead == null) {
@@ -132,12 +141,39 @@ void YKRun(void){
 	YKScheduler();
 }
 
+void printTCB(TCB* tcb) {
+	printString("{ priority = ");
+	printInt(tcb->priority);
+	printString(", delay = ");
+	printInt(tcb->delay);
+	printString("}\n");	
+}
+
+void printQueue(TCB* head, char* st) {
+	TCB* cur = head;
+	printString("Printing Queue: ");
+	printString(st);
+	printString("\n");
+
+	while(cur != null) {
+		printString(".");
+		printTCB(cur);
+		if(cur->next == null)
+			printString("its null!\n");
+		cur = cur->next;
+	}
+
+	printString("Done\n");
+}
+
 void YKDelayTask(unsigned count){
 	//printString("YKDelayTask\n");
 	//if (count > 0)Sets the state of the TCB to delayed and then calls the scheduler. 
+	printQueue(delayedHead, "Delayed");
 	if(count > 0) {
 		curTCB->delay = count;
 		curTCB->state = DELAYED;
+		removeFromQueue(curTCB);
 		delayedHead = addToQueue(curTCB, delayedHead);
 		YKScheduler();
 	}
@@ -173,10 +209,12 @@ void YKScheduler(void){
 	else if(curTCB != readyHead) {
 		YKCtxSwCount++;
 		if(curTCB->runCount == 0) {
-			curTCB->runCount = curTCB->runCount + 1;
+			// curTCB->runCount = curTCB->runCount + 1;
+			curTCB->runCount = 1;
 			YKDispatcher(2);
 		} else {
-			curTCB->runCount = curTCB->runCount + 1;
+			// curTCB->runCount = curTCB->runCount + 1;
+			curTCB->runCount = 1;
 			YKDispatcher(0);
 		}
 	}
@@ -245,4 +283,34 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
 }
 void YKEventReset(YKEVENT *event, unsigned eventMask){
 	//reset bits to 0
+}
+
+// typedef struct TCB {
+// 	unsigned short int context[3];//SS, SP, CS register will be saved here.
+// 	State state;// an enumerated type. blocked, delayed, ready
+// 	struct TCB * previous; //used when inserting and removing from queue (our queue will be a double linked list)
+// 	struct TCB * next; // same as above
+// 	unsigned delay; //How much time to delay
+// 	unsigned char priority; //priority value of the current task
+// 	void (* taskFunction)(void);
+// 	unsigned char runCount;
+// } TCB;
+
+void YKTickHandler() {
+	TCB* cur = delayedHead;
+	printQueue(delayedHead, " Delayed (before YKTickHandler)");
+	while(cur != null) {
+
+		cur->delay--;
+		if(cur->delay <= 0) {
+			cur->state = READY;
+
+			removeFromQueue(cur);
+
+			readyHead = addToQueue(cur, readyHead);
+
+		}
+		cur = cur->next;
+	}
+	printQueue(delayedHead, " Delayed (after YKTickHandler)");
 }

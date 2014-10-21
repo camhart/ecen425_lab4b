@@ -28,4 +28,5 @@ void tickHandler() {
     printString("\nTICK ");
     printInt(YKTickNum);
     printNewLine();
+    YKTickHandler();
 }

@@ -1,11 +1,11 @@
 #####################################################################
-# ECEn 425 Lab 4B Makefile
+# ECEn 425 Lab 4c Makefile
 
-lab4B.bin:	lab4Bfinal.s
-		nasm lab4Bfinal.s -o lab4B.bin -l lab4B.lst
+lab4c.bin:	labfinal.s
+		nasm labfinal.s -o lab4c.bin -l lab4c.lst
 
-lab4Bfinal.s:	clib.s myisr.s myinth.s lab4b_app.s yakc.s yaks.s
-		cat clib.s myisr.s myinth.s yakc.s lab4b_app.s yaks.s > lab4Bfinal.s
+labfinal.s:	clib.s myisr.s myinth.s lab4c_app.s yakc.s yaks.s
+		cat clib.s myisr.s myinth.s yakc.s lab4c_app.s yaks.s > labfinal.s
 
 myinth.s:	myinth.c
 		cpp myinth.c myinth.i
@@ -15,10 +15,10 @@ yakc.s:		yakc.c
 		cpp yakc.c yakc.i
 		c86 -g yakc.i yakc.s
 	
-lab4b_app.s:	lab4b_app.c
-		cpp lab4b_app.c lab4b_app.i
-		c86 -g lab4b_app.i lab4b_app.s
+lab4c_app.s:	lab4c_app.c
+		cpp lab4c_app.c lab4c_app.i
+		c86 -g lab4c_app.i lab4c_app.s
 
 clean:
-		rm lab4B.bin lab4B.lst lab4Bfinal.s myinth.s myinth.i \
-		yakc.s yakc.i lab4b_app.s lab4b_app.i
+		rm lab4c.bin lab4c.lst labfinal.s myinth.s myinth.i \
+		yakc.s yakc.i lab4c_app.s lab4c_app.i

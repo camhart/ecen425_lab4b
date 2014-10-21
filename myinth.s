@@ -120,6 +120,9 @@ L_myinth_18:
 	; >>>>> Line:	30
 	; >>>>> printNewLine(); 
 	call	printNewLine
+	; >>>>> Line:	31
+	; >>>>> YKTickHandler(); 
+	call	YKTickHandler
 	mov	sp, bp
 	pop	bp
 	ret
