@@ -54,6 +54,10 @@ unsigned YKEventPend(YKEVENT *event, unsigned eventMask, int waitMode);
 void YKEventSet(YKEVENT *event, unsigned eventMask);
 void YKEventReset(YKEVENT *event, unsigned eventMask);
 
+extern TCB* readyHead;
+extern TCB* delayedHead;
+extern TCB* blockedHead;
+
 #ifndef VAR
 #define VAR 1
 extern unsigned YKCtxSwCount; //Type: unsigned int This is an unsigned int that must be incremented each time a context switch occurs, defined as the dispatching of a task other than the task that ran most recently.

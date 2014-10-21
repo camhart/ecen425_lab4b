@@ -23,10 +23,28 @@ void keyHandler() {
     }
 }
 
-void tickHandler() {
+void YKTickHandler() {
+    TCB* cur = delayedHead;
+    TCB* nextDelayed = null;
+
     YKTickNum++;
     printString("\nTICK ");
     printInt(YKTickNum);
     printNewLine();
-    YKTickHandler();
+
+    printQueue(delayedHead, " Delayed (before YKTickHandler)");
+    while(cur != null) {
+        nextDelayed = cur->next;
+        cur->delay--;
+        if(cur->delay <= 0) {
+            cur->state = READY;
+
+            delayedHead = removeFromQueue(cur, delayedHead);
+
+            readyHead = addToQueue(cur, readyHead);
+
+        }
+        cur = nextDelayed;
+    }
+    printQueue(delayedHead, " Delayed (after YKTickHandler)");
 }

@@ -33,10 +33,10 @@ void YKInitialize(void){
 }
 
 void YKIdleTask(void){
-	int a = 0;
+	int a = 52;
 	// printString("YKIdleTask\n");
 	while(1){
-		// printString("I'm in the idle task\n");
+		// printString(".");
 		a++;
 		a = a * a;
 		YKIdleCount++;
@@ -141,7 +141,7 @@ void YKRun(void){
 }
 
 void printTCB(TCB* tcb) {
-	printString("{ priority = ");
+	printString("\t{ priority = ");
 	printInt(tcb->priority);
 	printString(", delay = ");
 	printInt(tcb->delay);
@@ -157,12 +157,8 @@ void printQueue(TCB* head, char* st) {
 	while(cur != null) {
 		printString(".");
 		printTCB(cur);
-		if(cur->next == null)
-			printString("its null!\n");
 		cur = cur->next;
 	}
-
-	printString("Done\n");
 }
 
 void YKDelayTask(unsigned count){
@@ -174,6 +170,7 @@ void YKDelayTask(unsigned count){
 		curTCB->state = DELAYED;
 		readyHead = removeFromQueue(curTCB, readyHead);
 		delayedHead = addToQueue(curTCB, delayedHead);
+		printQueue(delayedHead, "Delayed");
 		YKScheduler();
 	}
 }
@@ -197,14 +194,14 @@ void YKExitISR(void){
 }
 
 void YKScheduler(void){
-	//printString("YKScheduler\n");
-	//Peek the top ready task, if different from current task
-	//call dispatcher
+
+	// YKEnterMutex();
 
 	if(curTCB == null) {
 		YKCtxSwCount++;
 		YKDispatcher(1); //first run
 	}
+
 	else if(curTCB != readyHead) {
 		YKCtxSwCount++;
 		if(curTCB->runCount == 0) {
@@ -217,6 +214,10 @@ void YKScheduler(void){
 			YKDispatcher(0);
 		}
 	}
+
+	// else {
+	// 	YKExitMutex();
+	// }
 }
 
 YKSEM* YKSemCreate(int initialValue){
@@ -282,24 +283,4 @@ void YKEventSet(YKEVENT *event, unsigned eventMask){
 }
 void YKEventReset(YKEVENT *event, unsigned eventMask){
 	//reset bits to 0
-}
-
-void YKTickHandler() {
-	TCB* cur = delayedHead;
-	TCB* nextDelayed = null;
-	printQueue(delayedHead, " Delayed (before YKTickHandler)");
-	while(cur != null) {
-		nextDelayed = cur->next;
-		cur->delay--;
-		if(cur->delay <= 0) {
-			cur->state = READY;
-
-			delayedHead = removeFromQueue(cur, delayedHead);
-
-			readyHead = addToQueue(cur, readyHead);
-
-		}
-		cur = nextDelayed;
-	}
-	printQueue(delayedHead, " Delayed (after YKTickHandler)");
 }

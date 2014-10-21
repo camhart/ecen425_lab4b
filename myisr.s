@@ -55,7 +55,7 @@ tickISR:
 
         sti                 
         
-        call 	tickHandler   
+        call 	YKTickHandler   
         
         cli                 
         

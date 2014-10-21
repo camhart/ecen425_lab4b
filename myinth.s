@@ -45,7 +45,7 @@ L_myinth_9:
 	cmp	byte [bp-1], 100
 	jne	L_myinth_10
 	; >>>>> Line:	14
-	; >>>>> printString("\nDELAY  
+	; >>>>> printString("\nDELAY KEY PRESSED\n"); 
 	mov	ax, L_myinth_4
 	push	ax
 	call	printString
@@ -95,38 +95,110 @@ L_myinth_8:
 	mov	bp, sp
 	sub	sp, 4
 	jmp	L_myinth_9
+L_myinth_18:
+	DB	" Delayed (after YKTickHandler)",0
+L_myinth_17:
+	DB	" Delayed (before YKTickHandler)",0
 L_myinth_16:
 	DB	0xA,"TICK ",0
 	ALIGN	2
-tickHandler:
+YKTickHandler:
 	; >>>>> Line:	26
-	; >>>>> void tickHandler() { 
-	jmp	L_myinth_17
-L_myinth_18:
-	; >>>>> Line:	27
+	; >>>>> void YKTickHandler() { 
+	jmp	L_myinth_19
+L_myinth_20:
+	; >>>>> Line:	30
+	; >>>>> YKTickNum++; 
+	mov	ax, word [delayedHead]
+	mov	word [bp-2], ax
+	mov	word [bp-4], 0
+	; >>>>> Line:	30
 	; >>>>> YKTickNum++; 
 	inc	word [YKTickNum]
-	; >>>>> Line:	28
+	; >>>>> Line:	31
 	; >>>>> printString("\nTICK "); 
 	mov	ax, L_myinth_16
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	29
+	; >>>>> Line:	32
 	; >>>>> printInt(YKTickNum); 
 	push	word [YKTickNum]
 	call	printInt
 	add	sp, 2
-	; >>>>> Line:	30
+	; >>>>> Line:	33
 	; >>>>> printNewLine(); 
 	call	printNewLine
-	; >>>>> Line:	31
-	; >>>>> YKTickHandler(); 
-	call	YKTickHandler
+	; >>>>> Line:	35
+	; >>>>> printQueue(delayedHead, " Delayed (before Y 
+	mov	ax, L_myinth_17
+	push	ax
+	push	word [delayedHead]
+	call	printQueue
+	add	sp, 4
+	; >>>>> Line:	36
+	; >>>>> while(cur != 0) { 
+	jmp	L_myinth_22
+L_myinth_21:
+	; >>>>> Line:	37
+	; >>>>> nextDelayed = cur->next; 
+	mov	si, word [bp-2]
+	add	si, 10
+	mov	ax, word [si]
+	mov	word [bp-4], ax
+	; >>>>> Line:	38
+	; >>>>> cur->delay--; 
+	mov	si, word [bp-2]
+	add	si, 12
+	dec	word [si]
+	; >>>>> Line:	39
+	; >>>>> if(cur->delay <= 0) { 
+	mov	si, word [bp-2]
+	add	si, 12
+	mov	ax, word [si]
+	test	ax, ax
+	jne	L_myinth_24
+	; >>>>> Line:	40
+	; >>>>> cur->state = READY; 
+	mov	si, word [bp-2]
+	add	si, 6
+	mov	word [si], 3
+	; >>>>> Line:	42
+	; >>>>> delayedHead = removeFromQueue(cur, delayedHead); 
+	push	word [delayedHead]
+	push	word [bp-2]
+	call	removeFromQueue
+	add	sp, 4
+	mov	word [delayedHead], ax
+	; >>>>> Line:	44
+	; >>>>> readyHead = addToQueue(cur, readyHead); 
+	push	word [readyHead]
+	push	word [bp-2]
+	call	addToQueue
+	add	sp, 4
+	mov	word [readyHead], ax
+L_myinth_24:
+	; >>>>> Line:	47
+	; >>>>> cur = nextDelayed; 
+	mov	ax, word [bp-4]
+	mov	word [bp-2], ax
+L_myinth_22:
+	mov	ax, word [bp-2]
+	test	ax, ax
+	jne	L_myinth_21
+L_myinth_23:
+	; >>>>> Line:	49
+	; >>>>> printQueue(delayedHead, " Delayed (after YKTickHandler)"); 
+	mov	ax, L_myinth_18
+	push	ax
+	push	word [delayedHead]
+	call	printQueue
+	add	sp, 4
 	mov	sp, bp
 	pop	bp
 	ret
-L_myinth_17:
+L_myinth_19:
 	push	bp
 	mov	bp, sp
-	jmp	L_myinth_18
+	sub	sp, 4
+	jmp	L_myinth_20
