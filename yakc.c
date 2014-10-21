@@ -43,7 +43,7 @@ void YKIdleTask(void){
 	}
 }
 
-void removeFromQueue(TCB* tcb){
+ TCB* removeFromQueue(TCB* tcb){
 	if(tcb->previous != null)
 		tcb->previous->next = tcb->next;
 	if(tcb->next != null)
@@ -173,7 +173,7 @@ void YKDelayTask(unsigned count){
 	if(count > 0) {
 		curTCB->delay = count;
 		curTCB->state = DELAYED;
-		removeFromQueue(curTCB);
+		curTCB = removeFromQueue(curTCB);
 		delayedHead = addToQueue(curTCB, delayedHead);
 		YKScheduler();
 	}
@@ -305,7 +305,7 @@ void YKTickHandler() {
 		if(cur->delay <= 0) {
 			cur->state = READY;
 
-			removeFromQueue(cur);
+			cur = removeFromQueue(cur);
 
 			readyHead = addToQueue(cur, readyHead);
 
