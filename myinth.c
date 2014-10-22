@@ -22,10 +22,12 @@ void keyHandler() {
         printString(") IGNORED\n");
     }
 }
-
+    
 void YKTickHandler() {
     TCB* cur = delayedHead;
     TCB* nextDelayed = null;
+
+    YKEnterMutex();
 
     YKTickNum++;
     printString("\nTICK ");
@@ -38,11 +40,12 @@ void YKTickHandler() {
         if(cur->delay <= 0) {
             cur->state = READY;
 
-	    YKEnterMutex();
+	    
             delayedHead = removeFromQueue(cur, delayedHead);
             readyHead = addToQueue(cur, readyHead);
-	    YKExitMutex();
+	    
         }
         cur = nextDelayed;
     }
+    YKExitMutex();
 }

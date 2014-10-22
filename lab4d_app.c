@@ -31,7 +31,7 @@ void main(void)
     YKNewTask(BTask, (void *) &BStk[BSTACKSIZE], 5);
     YKNewTask(CTask, (void *) &CStk[CSTACKSIZE], 7);
     YKNewTask(DTask, (void *) &DStk[DSTACKSIZE], 8);
-    
+    // printQueue(readyHead, "ready head?");
     printString("Starting kernel...\n");
     YKRun();
 }

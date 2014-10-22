@@ -104,76 +104,73 @@ YKTickHandler:
 	jmp	L_myinth_17
 L_myinth_18:
 	; >>>>> Line:	30
-	; >>>>> YKTickNum++; 
+	; >>>>> YKEnterMutex(); 
 	mov	ax, word [delayedHead]
 	mov	word [bp-2], ax
 	mov	word [bp-4], 0
 	; >>>>> Line:	30
+	; >>>>> YKEnterMutex(); 
+	call	YKEnterMutex
+	; >>>>> Line:	32
 	; >>>>> YKTickNum++; 
 	inc	word [YKTickNum]
-	; >>>>> Line:	31
+	; >>>>> Line:	33
 	; >>>>> printString("\nTICK "); 
 	mov	ax, L_myinth_16
 	push	ax
 	call	printString
 	add	sp, 2
-	; >>>>> Line:	32
+	; >>>>> Line:	34
 	; >>>>> printInt(YKTickNum); 
 	push	word [YKTickNum]
 	call	printInt
 	add	sp, 2
-	; >>>>> Line:	33
+	; >>>>> Line:	35
 	; >>>>> printNewLine(); 
 	call	printNewLine
-	; >>>>> Line:	35
+	; >>>>> Line:	37
 	; >>>>> while(cur != 0) { 
 	jmp	L_myinth_20
 L_myinth_19:
-	; >>>>> Line:	36
-	; >>>>> nextDelayed = cur 
+	; >>>>> Line:	38
+	; >>>>>  
 	mov	si, word [bp-2]
 	add	si, 10
 	mov	ax, word [si]
 	mov	word [bp-4], ax
-	; >>>>> Line:	37
+	; >>>>> Line:	39
 	; >>>>> cur->delay--; 
 	mov	si, word [bp-2]
 	add	si, 12
 	dec	word [si]
-	; >>>>> Line:	38
+	; >>>>> Line:	40
 	; >>>>> if(cur->delay <= 0) { 
 	mov	si, word [bp-2]
 	add	si, 12
 	mov	ax, word [si]
 	test	ax, ax
 	jne	L_myinth_22
-	; >>>>> Line:	39
+	; >>>>> Line:	41
 	; >>>>> cur->state = READY; 
 	mov	si, word [bp-2]
 	add	si, 6
 	mov	word [si], 3
-	; >>>>> Line:	41
-	; >>>>> YKEnterMutex(); 
-	call	YKEnterMutex
-	; >>>>> Line:	42
+	; >>>>> Line:	44
 	; >>>>> delayedHead = removeFromQueue(cur, delayedHead); 
 	push	word [delayedHead]
 	push	word [bp-2]
 	call	removeFromQueue
 	add	sp, 4
 	mov	word [delayedHead], ax
-	; >>>>> Line:	43
+	; >>>>> Line:	45
 	; >>>>> readyHead = addToQueue(cur, readyHead); 
 	push	word [readyHead]
 	push	word [bp-2]
 	call	addToQueue
 	add	sp, 4
 	mov	word [readyHead], ax
-	; >>>>> Line:	44
-	; >>>>> YKExitMutex(); 
-	call	YKExitMutex
 L_myinth_22:
-	; >>>>> Line:	46
+	; >>>>> Line:	48
 	; >>>>> cur = nextDelayed; 
 	mov	ax, word [bp-4]
 	mov	word [bp-2], ax
@@ -182,6 +179,9 @@ L_myinth_20:
 	test	ax, ax
 	jne	L_myinth_19
 L_myinth_21:
+	; >>>>> Line:	50
+	; >>>>> YKExitMutex(); 
+	call	YKExitMutex
 	mov	sp, bp
 	pop	bp
 	ret
